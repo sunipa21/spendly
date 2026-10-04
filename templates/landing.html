@@ -24,7 +24,7 @@
         </p>
         <div class="lp-actions">
             <a href="{{ url_for('register') }}" class="lp-btn">Create free account</a>
-            <a href="#" class="lp-btn">See how it works</a>
+            <button type="button" class="lp-btn" id="how-it-works-btn">See how it works</button>
         </div>
     </div>
 
@@ -66,6 +66,19 @@
             </div>
         </div>
     </div>
+
+    <dialog class="lp-modal" id="how-it-works-modal" aria-label="How Spendly works">
+        <div class="lp-modal-content">
+            <button type="button" class="lp-modal-close" id="how-it-works-close" aria-label="Close video">&times;</button>
+            <div class="lp-modal-video">
+                <iframe id="how-it-works-video"
+                        data-src="https://www.youtube-nocookie.com/embed/M7lc1UVf-VE?autoplay=1&rel=0"
+                        title="How Spendly works"
+                        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                        allowfullscreen></iframe>
+            </div>
+        </div>
+    </dialog>
 </section>
 
 <section class="features">
@@ -96,4 +109,35 @@
     </div>
 </section>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function () {
+        const openBtn = document.getElementById("how-it-works-btn");
+        const modal = document.getElementById("how-it-works-modal");
+        const closeBtn = document.getElementById("how-it-works-close");
+        const video = document.getElementById("how-it-works-video");
+
+        openBtn.addEventListener("click", function () {
+            video.src = video.dataset.src;
+            modal.showModal();
+        });
+
+        closeBtn.addEventListener("click", function () {
+            modal.close();
+        });
+
+        // Clicks on the backdrop land on the <dialog> itself, not its content
+        modal.addEventListener("click", function (event) {
+            if (event.target === modal) modal.close();
+        });
+
+        // Fires for every way of closing (button, backdrop, Escape) —
+        // removing the src unloads the player so the video stops
+        modal.addEventListener("close", function () {
+            video.removeAttribute("src");
+        });
+    })();
+</script>
 {% endblock %}
