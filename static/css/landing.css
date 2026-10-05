@@ -246,3 +246,15 @@
     .lp-subtitle { font-size: 1.05rem; }
     .lp-stats { grid-template-columns: 1fr; }
 }
+
+/* ------------------------------------------------------------------ */
+/* Flash messages                                                      */
+/* ------------------------------------------------------------------ */
+
+.lp-flash {
+    max-width: var(--max-width);
+    margin: 1.5rem auto 0;
+    padding: 0 2rem;
+}
+
+.lp-flash .auth-success { margin-bottom: 0; }

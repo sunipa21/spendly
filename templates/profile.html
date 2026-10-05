@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Profile — Spendly{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1 class="auth-title">Hi, {{ session.user_name }}</h1>
+            <p class="auth-subtitle">Your profile page is coming in Step 4.</p>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
