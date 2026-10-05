@@ -8,6 +8,18 @@
 
 {% block content %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="lp-flash">
+    {% for category, message in messages %}
+    {% if category == 'success' %}
+    <div class="auth-success">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
 <section class="lp-hero">
     <div class="lp-hero-inner">
         <div class="lp-badge">
