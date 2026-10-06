@@ -65,7 +65,7 @@ def seed_db():
     expenses = [
         (user_id, 12.50, "Food", day(1), "Lunch at cafe"),
         (user_id, 45.00, "Transport", day(3), "Monthly bus pass top-up"),
-        (user_id, 89.99, "Bills", day(5), "Electricity bill"),
+        (user_id, 125.44, "Bills", day(5), "Electricity bill"),
         (user_id, 25.00, "Health", day(8), "Pharmacy"),
         (user_id, 15.00, "Entertainment", day(12), "Movie tickets"),
         (user_id, 60.25, "Shopping", day(15), "New shoes"),
