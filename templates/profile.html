@@ -2,15 +2,127 @@
 
 {% block title %}Profile — Spendly{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
 {% block content %}
 
-<section class="auth-section">
-    <div class="auth-container">
-        <div class="auth-header">
-            <h1 class="auth-title">Hi, {{ session.user_name }}</h1>
-            <p class="auth-subtitle">Your profile page is coming in Step 4.</p>
+<section class="pf-page">
+    <div class="pf-container">
+
+        <header class="pf-header">
+            <p class="pf-eyebrow">Profile</p>
+            <h1 class="pf-title">Hi, {{ user.name }}</h1>
+        </header>
+
+        <div class="pf-card pf-user">
+            <div class="pf-avatar">{{ user.initials }}</div>
+            <div class="pf-user-info">
+                <h2 class="pf-user-name">{{ user.name }}</h2>
+                <p class="pf-user-meta">
+                    <span class="pf-icon" aria-hidden="true"><i data-lucide="mail"></i></span>
+                    {{ user.email }}
+                </p>
+                <p class="pf-user-meta">
+                    <span class="pf-icon" aria-hidden="true"><i data-lucide="calendar"></i></span>
+                    Member since {{ user.member_since }}
+                </p>
+            </div>
         </div>
+
+        <div class="pf-stats">
+            <div class="pf-card pf-stat">
+                <span class="pf-stat-icon" aria-hidden="true"><i data-lucide="wallet"></i></span>
+                <div>
+                    <p class="pf-stat-label">Total spent</p>
+                    <p class="pf-stat-value">₹{{ "%.2f"|format(stats.total_spent) }}</p>
+                </div>
+            </div>
+            <div class="pf-card pf-stat">
+                <span class="pf-stat-icon" aria-hidden="true"><i data-lucide="receipt"></i></span>
+                <div>
+                    <p class="pf-stat-label">Transactions</p>
+                    <p class="pf-stat-value">{{ stats.transaction_count }}</p>
+                </div>
+            </div>
+            <div class="pf-card pf-stat">
+                <span class="pf-stat-icon pf-stat-icon-alt" aria-hidden="true"><i data-lucide="tag"></i></span>
+                <div>
+                    <p class="pf-stat-label">Top category</p>
+                    <p class="pf-stat-value">{{ stats.top_category }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="pf-grid">
+            <div class="pf-card">
+                <h2 class="pf-card-title">
+                    <span class="pf-icon" aria-hidden="true"><i data-lucide="list"></i></span>
+                    Recent transactions
+                </h2>
+                <div class="pf-table-wrap">
+                    <table class="pf-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th class="pf-amount">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tx in transactions %}
+                            <tr>
+                                <td class="pf-date">{{ tx.date }}</td>
+                                <td>{{ tx.description }}</td>
+                                <td><span class="pf-badge">{{ tx.category }}</span></td>
+                                <td class="pf-amount">₹{{ "%.2f"|format(tx.amount) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="pf-empty">No transactions yet</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="pf-card">
+                <h2 class="pf-card-title">
+                    <span class="pf-icon" aria-hidden="true"><i data-lucide="pie-chart"></i></span>
+                    Spending by category
+                </h2>
+                <div class="pf-cats">
+                    {% for c in categories %}
+                    <div class="pf-cat-row">
+                        <div class="pf-cat-head">
+                            <span class="pf-cat-name">{{ c.name }}</span>
+                            <span class="pf-cat-amount">₹{{ "%.2f"|format(c.amount) }}</span>
+                        </div>
+                        <div class="pf-cat-bar">
+                            <div class="pf-bar-track">
+                                <div class="pf-bar" style="width: {{ c.pct }}%"></div>
+                            </div>
+                            <span class="pf-cat-pct">{{ c.pct }}%</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="pf-empty">No spending yet</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
 
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    if (window.lucide) { lucide.createIcons(); }
+</script>
 {% endblock %}
