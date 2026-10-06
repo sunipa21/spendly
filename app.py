@@ -4,7 +4,14 @@ import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from database.db import create_user, get_db, get_user_by_email, init_db, seed_db
+from database.db import (
+    CATEGORIES,
+    create_user,
+    get_db,
+    get_user_by_email,
+    init_db,
+    seed_db,
+)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-me")
@@ -108,7 +115,51 @@ def privacy():
 def profile():
     if not session.get("user_id"):
         return redirect(url_for("login"))
-    return render_template("profile.html")
+
+    # Hardcoded sample data for the Step 4 design — Step 5 replaces it with
+    # real queries using the same context shape.
+    name = session["user_name"]
+    user = {
+        "name": name,
+        "initials": "".join(word[0] for word in name.split()[:2]).upper(),
+        "email": "demo@spendly.com",
+        "member_since": "January 2026",
+    }
+
+    transactions = [
+        {"date": "2026-09-25", "description": "Weekly groceries", "category": CATEGORIES[0], "amount": 54.30},
+        {"date": "2026-09-20", "description": "Gift wrapping", "category": CATEGORIES[6], "amount": 8.75},
+        {"date": "2026-09-15", "description": "New shoes", "category": CATEGORIES[5], "amount": 60.25},
+        {"date": "2026-09-12", "description": "Movie tickets", "category": CATEGORIES[4], "amount": 15.00},
+        {"date": "2026-09-08", "description": "Pharmacy", "category": CATEGORIES[3], "amount": 25.00},
+        {"date": "2026-09-05", "description": "Electricity bill", "category": CATEGORIES[2], "amount": 89.99},
+        {"date": "2026-09-03", "description": "Monthly bus pass top-up", "category": CATEGORIES[1], "amount": 45.00},
+        {"date": "2026-09-01", "description": "Lunch at cafe", "category": CATEGORIES[0], "amount": 12.50},
+    ]
+
+    categories = [
+        {"name": CATEGORIES[2], "amount": 89.99, "pct": 29},
+        {"name": CATEGORIES[0], "amount": 66.80, "pct": 21},
+        {"name": CATEGORIES[5], "amount": 60.25, "pct": 19},
+        {"name": CATEGORIES[1], "amount": 45.00, "pct": 14},
+        {"name": CATEGORIES[3], "amount": 25.00, "pct": 8},
+        {"name": CATEGORIES[4], "amount": 15.00, "pct": 5},
+        {"name": CATEGORIES[6], "amount": 8.75, "pct": 3},
+    ]
+
+    stats = {
+        "total_spent": round(sum(c["amount"] for c in categories), 2),
+        "transaction_count": len(transactions),
+        "top_category": categories[0]["name"],
+    }
+
+    return render_template(
+        "profile.html",
+        user=user,
+        stats=stats,
+        transactions=transactions,
+        categories=categories,
+    )
 
 
 @app.route("/expenses/add")
