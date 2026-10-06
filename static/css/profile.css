@@ -300,6 +300,115 @@
 }
 
 /* ------------------------------------------------------------------ */
+/* Profile — Date filter                                               */
+/* ------------------------------------------------------------------ */
+
+.pf-flash-error {
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+}
+
+.pf-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+}
+
+.pf-filter-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.pf-filter-preset {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    background: var(--paper-card);
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.pf-filter-preset:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.pf-filter-preset.is-active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--paper-card);
+}
+
+.pf-filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+}
+
+.pf-filter-form.is-active {
+    background: var(--accent-light);
+    border-color: var(--accent);
+}
+
+.pf-filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.pf-filter-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+}
+
+.pf-filter-input {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--ink);
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.75rem;
+}
+
+.pf-filter-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.pf-filter-apply {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--paper-card);
+    background: var(--ink);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.pf-filter-apply:hover { background: var(--accent); }
+
+/* ------------------------------------------------------------------ */
 /* Profile — Responsive                                                */
 /* ------------------------------------------------------------------ */
 
@@ -322,4 +431,8 @@
     .pf-page { padding: 2rem 1rem; }
     .pf-card { padding: 1.25rem; }
     .pf-table { min-width: 480px; }
+
+    .pf-filter-form { width: 100%; }
+    .pf-filter-field { flex: 1 1 8rem; }
+    .pf-filter-apply { flex: 1 1 100%; }
 }

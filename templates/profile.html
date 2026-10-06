@@ -16,6 +16,10 @@
             <h1 class="pf-title">Hi, {{ user.name }}</h1>
         </header>
 
+        {% if filter_error %}
+        <div class="pf-flash-error" role="alert">{{ filter_error }}</div>
+        {% endif %}
+
         <div class="pf-card pf-user">
             <div class="pf-avatar">{{ user.initials }}</div>
             <div class="pf-user-info">
@@ -29,6 +33,28 @@
                     Member since {{ user.member_since }}
                 </p>
             </div>
+        </div>
+
+        <div class="pf-card pf-filter">
+            <nav class="pf-filter-presets" aria-label="Date range presets">
+                {% for p in presets %}
+                <a href="{{ p.url }}"
+                   class="pf-filter-preset{% if p.is_active %} is-active{% endif %}"
+                   {% if p.is_active %}aria-current="page"{% endif %}>{{ p.label }}</a>
+                {% endfor %}
+            </nav>
+            <form method="get" action="{{ url_for('profile') }}"
+                  class="pf-filter-form{% if is_custom_range %} is-active{% endif %}">
+                <label class="pf-filter-field">
+                    <span class="pf-filter-label">From</span>
+                    <input type="date" name="date_from" value="{{ date_from }}" class="pf-filter-input">
+                </label>
+                <label class="pf-filter-field">
+                    <span class="pf-filter-label">To</span>
+                    <input type="date" name="date_to" value="{{ date_to }}" class="pf-filter-input">
+                </label>
+                <button type="submit" class="pf-filter-apply">Apply</button>
+            </form>
         </div>
 
         <div class="pf-stats">
