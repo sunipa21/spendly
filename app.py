@@ -1,4 +1,5 @@
 import calendar
+import math
 import os
 import sqlite3
 from datetime import date, datetime
@@ -7,6 +8,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from database.db import (
+    CATEGORIES,
     create_user,
     get_db,
     get_user_by_email,
@@ -18,6 +20,7 @@ from database.queries import (
     get_recent_transactions,
     get_summary_stats,
     get_user_by_id,
+    insert_expense,
 )
 
 app = Flask(__name__)
@@ -40,6 +43,47 @@ def _parse_date(value):
         return datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError:
         return None
+
+
+MAX_AMOUNT = 10_000_000
+MAX_DESCRIPTION_LENGTH = 200
+
+
+def _parse_amount(value):
+    """Parse an amount rounded to 2 dp; return None unless 0 < amount <= MAX_AMOUNT."""
+    try:
+        amount = float(value)
+    except ValueError:
+        return None
+    if not math.isfinite(amount):
+        return None
+    amount = round(amount, 2)
+    return amount if 0 < amount <= MAX_AMOUNT else None
+
+
+def _validate_expense_form(form):
+    """Validate a submitted expense form.
+
+    Returns (error, amount, expense_date); error is None when the form is valid.
+    """
+    amount = _parse_amount(form["amount"])
+    expense_date = _parse_date(form["date"])
+
+    if not form["amount"]:
+        return "Please enter an amount.", None, None
+    if amount is None:
+        return f"Amount must be between ₹0.01 and ₹{MAX_AMOUNT:,}.", None, None
+    if form["category"] not in CATEGORIES:
+        return "Please choose a valid category.", None, None
+    if expense_date is None:
+        return "Please enter a valid date.", None, None
+    if len(form["description"]) > MAX_DESCRIPTION_LENGTH:
+        return (
+            f"Description must be {MAX_DESCRIPTION_LENGTH} characters or fewer.",
+            None,
+            None,
+        )
+    return None, amount, expense_date
 
 
 def _resolve_date_range(args):
@@ -233,9 +277,50 @@ def profile():
     )
 
 
-@app.route("/expenses/add")
+@app.route("/analytics")
+def analytics():
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+    return render_template("analytics.html")
+
+
+@app.route("/expenses/add", methods=["GET", "POST"])
 def add_expense():
-    return "Add expense — coming in Step 7"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    error = None
+    if request.method == "GET":
+        form = {
+            "amount": "",
+            "category": "",
+            "date": date.today().isoformat(),
+            "description": "",
+        }
+    else:
+        form = {
+            field: request.form.get(field, "").strip()
+            for field in ("amount", "category", "date", "description")
+        }
+        error, amount, expense_date = _validate_expense_form(form)
+        if error is None:
+            insert_expense(
+                session["user_id"],
+                amount,
+                form["category"],
+                expense_date.isoformat(),
+                form["description"] or None,
+            )
+            return redirect(url_for("profile"))
+
+    return render_template(
+        "add_expense.html",
+        error=error,
+        form=form,
+        categories=CATEGORIES,
+        max_amount=MAX_AMOUNT,
+        max_description_length=MAX_DESCRIPTION_LENGTH,
+    )
 
 
 @app.route("/expenses/<int:id>/edit")

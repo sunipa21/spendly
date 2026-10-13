@@ -14,6 +14,14 @@
     gap: 1.5rem;
 }
 
+.pf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
 .pf-eyebrow {
     font-size: 0.75rem;
     font-weight: 600;
