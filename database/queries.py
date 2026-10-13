@@ -24,6 +24,20 @@ def get_user_by_id(user_id):
     }
 
 
+def insert_expense(user_id, amount, category, date, description):
+    conn = get_db()
+    try:
+        cursor = conn.execute(
+            "INSERT INTO expenses (user_id, amount, category, date, description) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (user_id, amount, category, date, description),
+        )
+        conn.commit()
+        return cursor.lastrowid
+    finally:
+        conn.close()
+
+
 def _date_filter(date_from=None, date_to=None):
     """Return an SQL fragment and params restricting expenses.date to the
     inclusive range. Either bound may be None for an open-ended range."""

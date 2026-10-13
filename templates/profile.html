@@ -12,8 +12,11 @@
     <div class="pf-container">
 
         <header class="pf-header">
-            <p class="pf-eyebrow">Profile</p>
-            <h1 class="pf-title">Hi, {{ user.name }}</h1>
+            <div>
+                <p class="pf-eyebrow">Profile</p>
+                <h1 class="pf-title">Hi, {{ user.name }}</h1>
+            </div>
+            <a href="{{ url_for('add_expense') }}" class="btn-primary">Add Expense</a>
         </header>
 
         {% if filter_error %}
