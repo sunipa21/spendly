@@ -240,6 +240,20 @@
     white-space: nowrap;
 }
 
+.pf-table th.pf-actions,
+.pf-table td.pf-actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.pf-edit-link {
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.pf-edit-link:hover { text-decoration: underline; }
+
 .pf-badge {
     display: inline-block;
     background: var(--paper-warm);
@@ -438,7 +452,7 @@
 @media (max-width: 600px) {
     .pf-page { padding: 2rem 1rem; }
     .pf-card { padding: 1.25rem; }
-    .pf-table { min-width: 480px; }
+    .pf-table { min-width: 540px; }
 
     .pf-filter-form { width: 100%; }
     .pf-filter-field { flex: 1 1 8rem; }

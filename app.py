@@ -4,7 +4,16 @@ import os
 import sqlite3
 from datetime import date, datetime
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import (
+    Flask,
+    abort,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from database.db import (
@@ -17,10 +26,12 @@ from database.db import (
 )
 from database.queries import (
     get_category_breakdown,
+    get_expense_by_id,
     get_recent_transactions,
     get_summary_stats,
     get_user_by_id,
     insert_expense,
+    update_expense,
 )
 
 app = Flask(__name__)
@@ -323,9 +334,50 @@ def add_expense():
     )
 
 
-@app.route("/expenses/<int:id>/edit")
+@app.route("/expenses/<int:id>/edit", methods=["GET", "POST"])
 def edit_expense(id):
-    return "Edit expense — coming in Step 8"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    # Scoped to the current user, so another user's expense is a 404 too.
+    expense = get_expense_by_id(id, session["user_id"])
+    if expense is None:
+        abort(404)
+
+    error = None
+    if request.method == "GET":
+        form = {
+            "amount": f"{expense['amount']:.2f}",
+            "category": expense["category"],
+            "date": expense["date"],
+            "description": expense["description"],
+        }
+    else:
+        form = {
+            field: request.form.get(field, "").strip()
+            for field in ("amount", "category", "date", "description")
+        }
+        error, amount, expense_date = _validate_expense_form(form)
+        if error is None:
+            update_expense(
+                id,
+                session["user_id"],
+                amount,
+                form["category"],
+                expense_date.isoformat(),
+                form["description"] or None,
+            )
+            return redirect(url_for("profile"))
+
+    return render_template(
+        "edit_expense.html",
+        error=error,
+        form=form,
+        expense_id=id,
+        categories=CATEGORIES,
+        max_amount=MAX_AMOUNT,
+        max_description_length=MAX_DESCRIPTION_LENGTH,
+    )
 
 
 @app.route("/expenses/<int:id>/delete")

@@ -38,6 +38,43 @@ def insert_expense(user_id, amount, category, date, description):
         conn.close()
 
 
+def get_expense_by_id(expense_id, user_id):
+    conn = get_db()
+    try:
+        row = conn.execute(
+            "SELECT id, amount, category, date, description FROM expenses "
+            "WHERE id = ? AND user_id = ?",
+            (expense_id, user_id),
+        ).fetchone()
+    finally:
+        conn.close()
+
+    if row is None:
+        return None
+
+    return {
+        "id": row["id"],
+        "amount": float(row["amount"]),
+        "category": row["category"],
+        "date": row["date"],
+        "description": row["description"] or "",
+    }
+
+
+def update_expense(expense_id, user_id, amount, category, date, description):
+    conn = get_db()
+    try:
+        cursor = conn.execute(
+            "UPDATE expenses SET amount = ?, category = ?, date = ?, description = ? "
+            "WHERE id = ? AND user_id = ?",
+            (amount, category, date, description, expense_id, user_id),
+        )
+        conn.commit()
+        return cursor.rowcount
+    finally:
+        conn.close()
+
+
 def _date_filter(date_from=None, date_to=None):
     """Return an SQL fragment and params restricting expenses.date to the
     inclusive range. Either bound may be None for an open-ended range."""
@@ -57,7 +94,7 @@ def get_recent_transactions(user_id, limit=10, date_from=None, date_to=None):
     conn = get_db()
     try:
         rows = conn.execute(
-            "SELECT date, description, category, amount FROM expenses "
+            "SELECT id, date, description, category, amount FROM expenses "
             f"WHERE user_id = ?{date_sql} ORDER BY date DESC, id DESC LIMIT ?",
             (user_id, *date_params, limit),
         ).fetchall()
@@ -66,6 +103,7 @@ def get_recent_transactions(user_id, limit=10, date_from=None, date_to=None):
 
     return [
         {
+            "id": row["id"],
             "date": row["date"],
             "description": row["description"] or "",
             "category": row["category"],
