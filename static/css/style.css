@@ -477,6 +477,19 @@ a { color: inherit; text-decoration: none; }
 
 .btn-submit:hover { background: var(--accent); }
 
+.btn-delete {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0.75rem;
+    color: var(--danger);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-delete:hover { text-decoration: underline; }
+
 .auth-switch {
     text-align: center;
     font-size: 0.875rem;
