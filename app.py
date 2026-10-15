@@ -25,6 +25,7 @@ from database.db import (
     seed_db,
 )
 from database.queries import (
+    delete_expense as delete_expense_row,
     get_category_breakdown,
     get_expense_by_id,
     get_recent_transactions,
@@ -380,9 +381,17 @@ def edit_expense(id):
     )
 
 
-@app.route("/expenses/<int:id>/delete")
+@app.route("/expenses/<int:id>/delete", methods=["POST"])
 def delete_expense(id):
-    return "Delete expense — coming in Step 9"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    # Scoped to the current user, so another user's expense is a 404 too.
+    if get_expense_by_id(id, session["user_id"]) is None:
+        abort(404)
+
+    delete_expense_row(id, session["user_id"])
+    return redirect(url_for("profile"))
 
 
 if __name__ == "__main__":

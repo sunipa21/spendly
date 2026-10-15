@@ -75,6 +75,19 @@ def update_expense(expense_id, user_id, amount, category, date, description):
         conn.close()
 
 
+def delete_expense(expense_id, user_id):
+    conn = get_db()
+    try:
+        cursor = conn.execute(
+            "DELETE FROM expenses WHERE id = ? AND user_id = ?",
+            (expense_id, user_id),
+        )
+        conn.commit()
+        return cursor.rowcount
+    finally:
+        conn.close()
+
+
 def _date_filter(date_from=None, date_to=None):
     """Return an SQL fragment and params restricting expenses.date to the
     inclusive range. Either bound may be None for an open-ended range."""
